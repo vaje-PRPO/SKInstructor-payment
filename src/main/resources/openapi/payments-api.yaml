@@ -1,0 +1,100 @@
+openapi: 3.0.3
+info:
+    title: SKInstructor Payment API
+    description: Mikrostoritev za izvajanje plačil.
+    version: 1.0.0
+paths:
+    /payments/process:
+        post:
+            summary: Ustvari plačilo
+            operationId: createPayment
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/PaymentRequest'
+            responses:
+                '201':
+                    description: Plačilo ustvarjeno
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PaymentResponse'
+
+    /payments/{transactionId}:
+        get:
+            summary: Preverjanje statusa transakcije
+            operationId: getPayment
+            parameters:
+                - name: transactionId
+                  in: path
+                  required: true
+                  description: Id of plačila
+                  schema:
+                      type: string
+                      format: uuid
+            responses:
+                '200':
+                    description: Plačilo najdeno
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PaymentResponse'
+                '400':
+                    description: Naroben transactionId
+
+                '404':
+                    description: Plačilo ni najdeno
+
+    # To še pride
+    # /webhooks/stripe:
+    #     post:
+    #         summary: Prejema dogodke Stripe, preverja podpis
+
+components:
+    schemas:
+        PaymentRequest:
+            type: object
+            description: Neki neki TODO
+            required:
+                - bookingId
+                - studentId
+                - amount
+            properties:
+                bookingId:
+                    type: string
+                    format: uuid
+                    description: Id od bookinga za katerega se plačuje
+                studentId:
+                    type: string
+                    format: uuid
+                    description: Id os učenca, ki plačuje
+                amount:
+                    type: integer
+                    format: int64
+                    minimum: 50
+                    description: Cena v centih
+
+        PaymentResponse:
+            type: object
+
+        PaymentStatus:
+            type: string
+            description: Trenutno stanje plačila
+            enum:
+                - PENDING
+                - PAID
+                - FAILED
+
+        ErrorResponse:
+            type: object
+            description: Ko se zgodi napaka
+            properties:
+                # mogoče
+                # code:
+                #     type: string
+                #     example: PAYMENT_NOT_FOUND
+                message:
+                    type: string
+                    description: Razlaga napake
