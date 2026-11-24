@@ -4,6 +4,13 @@ info:
     description: Mikrostoritev za izvajanje plačil.
     version: 1.0.0
 paths:
+    /payments/health:
+        get:
+            summary: Preveri, da mikrostoritev stoji
+            operationId: getHealth
+            responses:
+                '200':
+                    description: Deluje
     /payments/process:
         post:
             summary: Ustvari plačilo
